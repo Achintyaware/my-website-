@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Achintya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --beige: #EADFC8;
+    --paper: #F4EEDF;
+    --olive: #5C6A2C;
+    --olive-deep: #3D4720;
+    --burgundy: #6E1F2E;
+    --ink: #2A2A18;
+    --muted: #6B6A52;
+    --line: rgba(42, 42, 24, .22);
+    --bg: var(--beige);
+    --surface: var(--paper);
+    --text: var(--ink);
+    --accent: var(--burgundy);
+    --on-accent: var(--beige);
+    --band: var(--olive);
+    --on-band: var(--beige);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #232A12;
+      --surface: #2E371A;
+      --text: #EADFC8;
+      --muted: #B8B195;
+      --line: rgba(234, 223, 200, .25);
+      --accent: #C9697B;
+      --on-accent: #2A0E15;
+      --band: #3D4720;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 400 17px/1.6 "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 22px; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .band :focus-visible { outline-color: var(--beige); }
+
+  /* top bar */
+  header.bar { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+  header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .mark { font-family: "Young Serif", Georgia, serif; font-size: 20px; text-decoration: none; color: var(--accent); }
+  nav { display: flex; gap: 22px; }
+  nav a { text-decoration: none; font-weight: 500; font-size: 15px; padding: 6px 0; border-bottom: 2px solid transparent; }
+  nav a:hover { border-bottom-color: var(--accent); }
+
+  /* hero */
+  .hero { padding: 72px 0 64px; }
+  .hero h1 {
+    font-family: "Young Serif", Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(56px, 13vw, 128px);
+    line-height: .95;
+    letter-spacing: -.02em;
+    margin: 0 0 24px;
+    color: var(--accent);
+  }
+  .hero p { font-size: clamp(19px, 3vw, 24px); max-width: 30em; margin: 0; line-height: 1.45; }
+  [contenteditable]:hover { outline: 1px dashed var(--line); outline-offset: 6px; }
+  [contenteditable]:focus { outline: 2px solid var(--accent); outline-offset: 6px; }
+  .hint { margin-top: 18px; font-size: 14px; color: var(--muted); }
+
+  /* sections */
+  section { padding: 64px 0; }
+  section.band { background: var(--band); color: var(--on-band); }
+  h2 { font-family: "Young Serif", Georgia, serif; font-weight: 400; font-size: clamp(30px, 5vw, 44px); line-height: 1.1; margin: 0 0 8px; }
+  .lede { margin: 0 0 28px; color: var(--muted); max-width: 36em; }
+  .band .lede { color: rgba(234, 223, 200, .8); }
+
+  .btn {
+    font: 600 15px/1 "Instrument Sans", system-ui, sans-serif;
+    background: var(--accent); color: var(--on-accent);
+    border: 2px solid var(--accent); border-radius: 4px;
+    padding: 12px 18px; cursor: pointer;
+  }
+  .btn:hover { filter: brightness(1.12); }
+  .btn.ghost { background: transparent; color: inherit; border-color: currentColor; }
+  .band .btn { background: var(--beige); color: var(--burgundy); border-color: var(--beige); }
+  .band .btn.ghost { background: transparent; color: var(--beige); }
+  .btn.small { padding: 8px 12px; font-size: 14px; }
+
+  .drop {
+    border: 2px dashed var(--line); border-radius: 6px; padding: 26px;
+    display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .drop.over { border-color: var(--accent); background: var(--surface); }
+  .band .drop { border-color: rgba(234, 223, 200, .45); }
+  .band .drop.over { border-color: var(--beige); background: rgba(0, 0, 0, .15); }
+  .drop span { max-width: 24em; }
+
+  /* file list */
+  ul.files { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  ul.files li { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .fname { font-weight: 600; overflow-wrap: anywhere; }
+  .fmeta { color: var(--muted); font-size: 14px; grid-column: 1; }
+  .actions { grid-column: 2; grid-row: 1 / span 2; display: flex; gap: 8px; }
+
+  /* gallery */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+  .tile { position: relative; aspect-ratio: 1; border-radius: 4px; overflow: hidden; background: rgba(0,0,0,.2); }
+  .tile button.open { all: unset; cursor: zoom-in; display: block; width: 100%; height: 100%; }
+  .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tile .del {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--burgundy); color: var(--beige); border: 0; border-radius: 4px;
+    font: 600 13px/1 "Instrument Sans", system-ui, sans-serif; padding: 7px 9px; cursor: pointer;
+  }
+  dialog { border: 0; padding: 0; background: transparent; max-width: 94vw; max-height: 94vh; }
+  dialog::backdrop { background: rgba(35, 42, 18, .88); }
+  dialog img { max-width: 94vw; max-height: 86vh; display: block; margin: 0 auto; border-radius: 4px; }
+  dialog .cap { color: var(--beige); text-align: center; margin: 10px 0 0; }
+  dialog .btn { display: block; margin: 12px auto 0; }
+
+  .empty { color: var(--muted); padding: 18px 0; }
+  .band .empty { color: rgba(234, 223, 200, .8); }
+
+  /* device bays */
+  .bays { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+  .bay { border: 2px solid var(--accent); border-radius: 6px; padding: 20px; background: var(--surface); min-height: 200px; }
+  .bay.vacant {
+    border-style: dashed; background: transparent;
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 6px;
+  }
+  .bay.vacant strong { font-family: "Young Serif", Georgia, serif; font-weight: 400; font-size: 22px; color: var(--accent); }
+  .bay h3 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); flex: none; }
+  .dot.ok { background: var(--olive); box-shadow: 0 0 0 3px rgba(92, 106, 44, .3); }
+  .dot.bad { background: var(--accent); }
+  .bay .url { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; margin: 4px 0 12px; }
+  dl.readout { margin: 0 0 14px; display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; }
+  dl.readout dt { color: var(--muted); }
+  dl.readout dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+  .msg { font-size: 14px; color: var(--muted); margin: 0 0 14px; }
+  form.add { display: grid; gap: 10px; width: 100%; margin-top: 8px; }
+  form.add label { font-size: 14px; font-weight: 500; display: grid; gap: 4px; }
+  form.add input {
+    font: inherit; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 4px;
+    background: var(--paper); color: var(--ink);
+  }
+  form.add .row { display: flex; gap: 10px; }
+
+  footer { padding: 36px 0 56px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+
+  @media (max-width: 560px) {
+    nav { gap: 14px; }
+    .hero { padding: 48px 0 44px; }
+    section { padding: 48px 0; }
+    ul.files li { grid-template-columns: 1fr; }
+    .actions { grid-column: 1; grid-row: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="#top">Achintya</a>
+    <nav aria-label="Sections">
+      <a href="#files">Files</a>
+      <a href="#images">Images</a>
+      <a href="#devices">Devices</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <h1 id="siteName" contenteditable="true" spellcheck="false" aria-label="Your name">Achintya</h1>
+    <p id="siteTag" contenteditable="true" spellcheck="false" aria-label="Your tagline">I build things that run on phones, servers, and small chips. This is where I keep them.</p>
+    <p class="hint">Click the name or the line above to rewrite them. Changes save in this browser.</p>
+  </div>
+
+  <section id="files">
+    <div class="wrap">
+      <h2>Files</h2>
+      <p class="lede">Documents, code, archives, anything. Stored in this browser, so they stay after you close the tab.</p>
+      <div class="drop" id="fileDrop">
+        <span>Drop files here, or pick them from your device.</span>
+        <button class="btn" id="pickFiles" type="button">Add files</button>
+        <input type="file" id="fileInput" multiple hidden>
+      </div>
+      <ul class="files" id="fileList"></ul>
+      <p class="empty" id="fileEmpty" hidden>No files yet.</p>
+    </div>
+  </section>
+
+  <section id="images" class="band">
+    <div class="wrap">
+      <h2>Images</h2>
+      <p class="lede">Photos, screenshots, diagrams. Tap an image to see it full size.</p>
+      <div class="drop" id="imgDrop">
+        <span>Drop images here, or pick them from your device.</span>
+        <button class="btn" id="pickImgs" type="button">Add images</button>
+        <input type="file" id="imgInput" accept="image/*" multiple hidden>
+      </div>
+      <div class="grid" id="grid"></div>
+      <p class="empty" id="imgEmpty" hidden>No images yet.</p>
+    </div>
+  </section>
+
+  <section id="devices">
+    <div class="wrap">
+      <h2>Devices</h2>
+      <p class="lede">Reserved for the ESP32 and anything else you wire up later. Point a slot at a URL that returns JSON and the readings appear here.</p>
+      <div class="bays" id="bays"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Everything on this page is saved only in this browser. Clearing site data will remove it.</div>
+</footer>
+
+<dialog id="viewer" aria-label="Image viewer">
+  <img id="viewerImg" alt="">
+  <p class="cap" id="viewerCap"></p>
+  <button class="btn ghost" id="viewerClose" type="button" style="color:#EADFC8">Close</button>
+</dialog>
+
+<script>
+(() => {
+  /* ---------- tiny helpers ---------- */
+  const $ = (s) => document.querySelector(s);
+  const h = (tag, props = {}, ...kids) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(props)) {
+      if (k === 'class') el.className = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v);
+    }
+    kids.flat().forEach((c) => el.append(c));
+    return el;
+  };
+  const fmtSize = (b) => b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(1) + ' MB';
+  const fmtDate = (t) => new Date(t).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  };
+
+  /* ---------- editable name + tagline ---------- */
+  const nameEl = $('#siteName'), tagEl = $('#siteTag');
+  nameEl.textContent = store.get('site.name', nameEl.textContent);
+  tagEl.textContent = store.get('site.tag', tagEl.textContent);
+  const brand = $('.mark');
+  brand.textContent = nameEl.textContent;
+  nameEl.addEventListener('input', () => { store.set('site.name', nameEl.textContent.trim()); brand.textContent = nameEl.textContent.trim() || 'Home'; });
+  tagEl.addEventListener('input', () => store.set('site.tag', tagEl.textContent.trim()));
+  nameEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); nameEl.blur(); } });
+
+  /* ---------- IndexedDB ---------- */
+  const dbReady = new Promise((resolve, reject) => {
+    const req = indexedDB.open('personal-site', 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('items', { keyPath: 'id', autoIncrement: true });
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+  const run = async (mode, fn) => {
+    const db = await dbReady;
+    return new Promise((resolve, reject) => {
+      const t = db.transaction('items', mode);
+      const r = fn(t.objectStore('items'));
+      t.oncomplete = () => resolve(r && r.result);
+      t.onerror = () => reject(t.error);
+    });
+  };
+  const addItem = (item) => run('readwrite', (s) => s.add(item));
+  const delItem = (id) => run('readwrite', (s) => s.delete(id));
+  const allItems = () => run('readonly', (s) => s.getAll());
+
+  let urls = [];
+  const blobUrl = (blob) => { const u = URL.createObjectURL(blob); urls.push(u); return u; };
+
+  async function render() {
+    urls.forEach(URL.revokeObjectURL); urls = [];
+    let items = [];
+    try { items = await allItems(); } catch {
+      $('#fileEmpty').textContent = 'This browser blocked file storage. Open the page in a regular (non-private) window.';
+      $('#fileEmpty').hidden = false; return;
+    }
+    items.sort((a, b) => b.added - a.added);
+    const files = items.filter((i) => i.kind === 'file');
+    const imgs = items.filter((i) => i.kind === 'image');
+
+    const list = $('#fileList'); list.replaceChildren();
+    files.forEach((f) => {
+      const url = blobUrl(f.blob);
+      list.append(h('li', {},
+        h('div', { class: 'fname' }, f.name),
+        h('div', { class: 'fmeta' }, fmtSize(f.size) + ', added ' + fmtDate(f.added)),
+        h('div', { class: 'actions' },
+          h('a', { class: 'btn small', href: url, download: f.name }, 'Download'),
+          h('button', { class: 'btn small ghost', type: 'button', 'aria-label': 'Delete ' + f.name, onclick: async () => { await delItem(f.id); render(); } }, 'Delete')
+        )
+      ));
+    });
+    $('#fileEmpty').textContent = 'No files yet.';
+    $('#fileEmpty').hidden = files.length > 0;
+
+    const grid = $('#grid'); grid.replaceChildren();
+    imgs.forEach((i) => {
+      const url = blobUrl(i.blob);
+      grid.append(h('div', { class: 'tile' },
+        h('button', { class: 'open', type: 'button', 'aria-label': 'View ' + i.name, onclick: () => openViewer(url, i.name) },
+          h('img', { src: url, alt: i.name, loading: 'lazy' })),
+        h('button', { class: 'del', type: 'button', 'aria-label': 'Delete ' + i.name, onclick: async () => { await delItem(i.id); render(); } }, 'Delete')
+      ));
+    });
+    $('#imgEmpty').hidden = imgs.length > 0;
+  }
+
+  async function ingest(fileList, kind) {
+    for (const f of fileList) {
+      if (kind === 'image' && !f.type.startsWith('image/')) continue;
+      await addItem({ kind, name: f.name, type: f.type, size: f.size, blob: f, added: Date.now() });
+    }
+    render();
+  }
+
+  function wireDrop(zoneSel, btnSel, inputSel, kind) {
+    const zone = $(zoneSel), input = $(inputSel);
+    $(btnSel).addEventListener('click', () => input.click());
+    input.addEventListener('change', () => { ingest(input.files, kind); input.value = ''; });
+    ['dragenter', 'dragover'].forEach((ev) => zone.addEventListener(ev, (e) => { e.preventDefault(); zone.classList.add('over'); }));
+    ['dragleave', 'drop'].forEach((ev) => zone.addEventListener(ev, (e) => { e.preventDefault(); zone.classList.remove('over'); }));
+    zone.addEventListener('drop', (e) => ingest(e.dataTransfer.files, kind));
+  }
+  wireDrop('#fileDrop', '#pickFiles', '#fileInput', 'file');
+  wireDrop('#imgDrop', '#pickImgs', '#imgInput', 'image');
+
+  /* ---------- image viewer ---------- */
+  const viewer = $('#viewer');
+  function openViewer(url, name) { $('#viewerImg').src = url; $('#viewerImg').alt = name; $('#viewerCap').textContent = name; viewer.showModal(); }
+  $('#viewerClose').addEventListener('click', () => viewer.close());
+  viewer.addEventListener('click', (e) => { if (e.target === viewer) viewer.close(); });
+
+  /* ---------- device bays ---------- */
+  let devices = store.get('site.devices', []);
+  const status = {};            // id -> { ok, data, error }
+  const saveDevices = () => store.set('site.devices', devices);
+
+  async function poll(d) {
+    try {
+      const res = await fetch(d.url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('The device answered with status ' + res.status + '.');
+      status[d.id] = { ok: true, data: await res.json() };
+    } catch (err) {
+      status[d.id] = { ok: false, error: err instanceof SyntaxError
+        ? 'The device answered, but not with JSON.'
+        : 'Could not reach the device. Check the address, the Wi-Fi network, and that the ESP32 allows cross-origin requests.' };
+    }
+    renderBays();
+  }
+  const pollAll = () => devices.forEach(poll);
+
+  function renderBays() {
+    const root = $('#bays');
+    if (root.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return; // don't wipe a form being typed in
+    root.replaceChildren();
+    devices.forEach((d) => {
+      const s = status[d.id];
+      const dot = h('span', { class: 'dot' + (s ? (s.ok ? ' ok' : ' bad') : '') });
+      const card = h('div', { class: 'bay' }, h('h3', {}, dot, d.name), h('div', { class: 'url' }, d.url));
+      if (!s) card.append(h('p', { class: 'msg' }, 'Checking the device.'));
+      else if (!s.ok) card.append(h('p', { class: 'msg' }, s.error));
+      else {
+        const dl = h('dl', { class: 'readout' });
+        const entries = typeof s.data === 'object' && s.data !== null ? Object.entries(s.data) : [['value', s.data]];
+        entries.forEach(([k, v]) => dl.append(h('dt', {}, k), h('dd', {}, typeof v === 'object' ? JSON.stringify(v) : String(v))));
+        card.append(dl);
+      }
+      card.append(h('button', { class: 'btn small ghost', type: 'button', onclick: () => { devices = devices.filter((x) => x.id !== d.id); saveDevices(); renderBays(); } }, 'Remove'));
+      root.append(card);
+    });
+
+    // the always-empty slot
+    const vacant = h('div', { class: 'bay vacant' });
+    const open = h('button', { class: 'btn', type: 'button' }, 'Connect a device');
+    vacant.append(h('strong', {}, 'Empty slot'), h('span', { class: 'msg' }, 'Nothing connected here yet.'), open);
+    open.addEventListener('click', () => {
+      const name = h('input', { id: 'devName', type: 'text', placeholder: 'ESP32 sensor', required: '' });
+      const url = h('input', { id: 'devUrl', type: 'url', placeholder: 'http://192.168.1.50/data', required: '' });
+      const form = h('form', { class: 'add' },
+        h('label', { for: 'devName' }, 'Name', name),
+        h('label', { for: 'devUrl' }, 'Address that returns JSON', url),
+        h('div', { class: 'row' },
+          h('button', { class: 'btn small', type: 'submit' }, 'Save device'),
+          h('button', { class: 'btn small ghost', type: 'button', onclick: () => { document.activeElement.blur(); renderBays(); } }, 'Cancel')
+        ));
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const d = { id: String(Date.now()), name: name.value.trim(), url: url.value.trim() };
+        devices.push(d); saveDevices(); document.activeElement.blur(); renderBays(); poll(d);
+      });
+      open.replaceWith(form); name.focus();
+    });
+    root.append(vacant);
+  }
+
+  renderBays();
+  pollAll();
+  setInterval(pollAll, 5000);
+  render();
+})();
+</script>
+</body>
+</html>
